@@ -1,4 +1,4 @@
-import SemanticAIContentDetector from '@/components/SemanticAIContentDetector';
+import SemanticAIContentDetector from '../components/SemanticAIContentDetector';
 
 export default function Home() {
   return (
