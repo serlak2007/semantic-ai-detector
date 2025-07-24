@@ -24,7 +24,7 @@ const handleAnalyze = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ userInput: content }),
     });
 
     const data = await response.json();
