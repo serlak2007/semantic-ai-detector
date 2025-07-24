@@ -21,21 +21,23 @@ const handleAnalyze = async () => {
   try {
     const response = await fetch('/api/analyze', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ content }),
     });
 
     const data = await response.json();
 
-    // Optional: You can structure this however you want
     setResult({
-      aiProbability: 0,  // Placeholder if you want to extract scores later
+      aiProbability: 0,
       semanticRisk: 0,
       intentCoverage: 0,
       entityDepth: 0,
-      recommendations: [data.result], // this is the text response from GPT
+      recommendations: [data.result], // this is GPT response text
     });
   } catch (error) {
+    console.error('API Error:', error);
     setResult({
       aiProbability: 0,
       semanticRisk: 0,
@@ -49,6 +51,7 @@ const handleAnalyze = async () => {
 };
 
 
+  
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <h1 className="text-3xl font-bold text-center">Semantic AI Content Detector</h1>
