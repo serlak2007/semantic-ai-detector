@@ -78,6 +78,9 @@ Content to analyze:
     
     const output = data?.choices?.[0]?.message?.content;
 
+    // Strip code block wrapper if present
+    const cleanedOutput = output?.replace(/```json|```/g, '').trim();
+
     try {
       const parsed = JSON.parse(output || '{}');
       return res.status(200).json(parsed);
