@@ -29,8 +29,18 @@ const handleAnalyze = async () => {
 
     const data = await response.json();
 
-    // Handle both success and fallback formats
-    const parsed = data?.ai_likeness_score !== undefined ? data : data.raw ? JSON.parse(data.raw) : null;
+let parsed: any = null;
+if (data?.ai_likeness_score !== undefined) {
+  parsed = data;
+} else if (data?.raw) {
+  try {
+    const cleaned = data.raw.replace(/```json|```/g, '').trim();
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
+    console.error('❌ Failed to parse GPT JSON response:', e);
+  }
+}
+
 
     setResult({
       aiProbability: parsed?.ai_likeness_score ?? 0,
