@@ -31,7 +31,7 @@ const handleAnalyze = async () => {
 
     setResult({
       aiProbability: data.ai_likeness_score || 0,
-      semanticRisk: 100 - (data.semantic_depth_score || 0), // Inverted for risk
+      semanticRisk: 100 - (data.semantic_depth_score || 0), // Inverted for risk maybe
       intentCoverage: Math.round((data.semantic_depth_score || 0) * 0.8), // Estimate
       entityDepth: Math.round((data.semantic_depth_score || 0) / 25),     // Scale 0–4
       recommendations: [
