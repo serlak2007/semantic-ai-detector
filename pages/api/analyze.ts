@@ -72,6 +72,10 @@ Content to analyze:
     });
 
     const data = await response.json();
+    
+    // ✅ Add this log to inspect the raw GPT output
+    console.log('🧠 GPT Raw Response:', JSON.stringify(data, null, 2));
+    
     const output = data?.choices?.[0]?.message?.content;
 
     try {
