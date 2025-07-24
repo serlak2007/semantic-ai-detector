@@ -1,29 +1,53 @@
 import React, { useState } from 'react';
 
+type AnalysisResult = {
+  aiProbability: number;
+  semanticRisk: number;
+  intentCoverage: number;
+  entityDepth: number;
+  recommendations: string[];
+};
+
 export default function SemanticAIContentDetector() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
 
-  const handleAnalyze = async () => {
-    setLoading(true);
-    setResult(null);
 
-    setTimeout(() => {
-      setResult({
-        aiProbability: 82,
-        semanticRisk: 68,
-        intentCoverage: 45,
-        entityDepth: 3,
-        recommendations: [
-          'Add more named entities like product names or expert references.',
-          'Include a comparison or transactional section.',
-          'Reduce generic transitional phrases.'
-        ]
-      });
-      setLoading(false);
-    }, 1500);
-  };
+const handleAnalyze = async () => {
+  setLoading(true);
+  setResult(null);
+
+  try {
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
+
+    const data = await response.json();
+
+    // Optional: You can structure this however you want
+    setResult({
+      aiProbability: 0,  // Placeholder if you want to extract scores later
+      semanticRisk: 0,
+      intentCoverage: 0,
+      entityDepth: 0,
+      recommendations: [data.result], // this is the text response from GPT
+    });
+  } catch (error) {
+    setResult({
+      aiProbability: 0,
+      semanticRisk: 0,
+      intentCoverage: 0,
+      entityDepth: 0,
+      recommendations: ['Error analyzing content.'],
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
