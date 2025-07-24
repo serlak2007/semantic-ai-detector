@@ -29,14 +29,15 @@ const handleAnalyze = async () => {
 
     const data = await response.json();
 
+    // If response was parsed successfully
     setResult({
-      aiProbability: data.ai_likeness_score || 0,
-      semanticRisk: 100 - (data.semantic_depth_score || 0), // Inverted for risk maybe
-      intentCoverage: Math.round((data.semantic_depth_score || 0) * 0.8), // Estimate
-      entityDepth: Math.round((data.semantic_depth_score || 0) / 25),     // Scale 0–4
+      aiProbability: data.ai_likeness_score ?? 0,
+      semanticRisk: 100 - (data.semantic_depth_score ?? 0),
+      intentCoverage: Math.round((data.semantic_depth_score ?? 0) * 0.8),
+      entityDepth: Math.round((data.semantic_depth_score ?? 0) / 25),
       recommendations: [
-        `Verdict: ${data.verdict || 'Unknown'}`,
-        data.improvement_suggestions || 'No suggestions provided.',
+        `Verdict: ${data.verdict ?? 'Unknown'}`,
+        data.improvement_suggestions ?? 'No suggestions provided.',
       ],
     });
   } catch (error) {
