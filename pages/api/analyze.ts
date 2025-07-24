@@ -11,22 +11,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const prompt = `
-You are a semantic content quality evaluator trained to detect AI-generated patterns and shallow content structures.
+You are SemanticIQ 1.0, an advanced semantic content evaluator trained using the Semantic SEO framework of Koray Tuğberk Gübür, Bill Slawski’s entity indexing principles, and Google’s document retrieval patents.
 
-Analyze the following content for the following dimensions:
+Your goal is to analyze the content below for deep semantic structure, AI-likeness, and optimization signals related to Google’s retrieval cost model.
 
-1. AI-Likeness Score (0-100)
-2. Semantic Depth Score (0-100)
-3. Verdict (Human / AI-Like / Hybrid)
-4. Suggestions for Improvement
+---
 
-Return a JSON like:
+Your evaluation must consider:
+
+1. **AI-Likeness Score (0–100)**  
+   Detect signs of language prediction, repetition, low information gain, and uniform sentence structure.  
+   - High = repetitive, templated, shallow, generic  
+   - Low = unpredictable, entity-rich, outcome-anchored writing
+
+2. **Semantic Depth Score (0–100)**  
+   Based on how well the content reflects:  
+   - Named and linked entities  
+   - Outcome-mechanism relationships  
+   - Intent frames (comparison, risk, benefit, etc.)  
+   - Topical layer richness (e.g. internal concept variance)
+
+3. **Verdict**  
+   Return one: "Human", "AI-Like", or "Hybrid"
+
+4. **Improvement Suggestions**  
+   Recommend actions such as adding entities, restructuring for buyer intent, improving topical coverage, or removing fluff.
+
+---
+
+Always return valid JSON in this exact format:
+
 {
   "ai_likeness_score": 0-100,
   "semantic_depth_score": 0-100,
   "verdict": "Human" | "AI-Like" | "Hybrid",
-  "improvement_suggestions": "..."
+  "improvement_suggestions": "string"
 }
+
+---
 
 Content to analyze:
 """${userInput}"""
@@ -42,9 +64,10 @@ Content to analyze:
       body: JSON.stringify({
         model: 'gpt-4o',
         messages: [
-          { role: 'system', content: prompt },
+          { role: 'system', content: 'You are SemanticIQ 1.0, a semantic content scoring AI.' },
+          { role: 'user', content: prompt }
         ],
-        temperature: 0.3,
+        temperature: 0.2,
       }),
     });
 
