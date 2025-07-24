@@ -29,15 +29,17 @@ const handleAnalyze = async () => {
 
     const data = await response.json();
 
-    // If response was parsed successfully
+    // Handle both success and fallback formats
+    const parsed = data?.ai_likeness_score !== undefined ? data : data.raw ? JSON.parse(data.raw) : null;
+
     setResult({
-      aiProbability: data.ai_likeness_score ?? 0,
-      semanticRisk: 100 - (data.semantic_depth_score ?? 0),
-      intentCoverage: Math.round((data.semantic_depth_score ?? 0) * 0.8),
-      entityDepth: Math.round((data.semantic_depth_score ?? 0) / 25),
+      aiProbability: parsed?.ai_likeness_score ?? 0,
+      semanticRisk: 100 - (parsed?.semantic_depth_score ?? 0),
+      intentCoverage: Math.round((parsed?.semantic_depth_score ?? 0) * 0.8),
+      entityDepth: Math.round((parsed?.semantic_depth_score ?? 0) / 25),
       recommendations: [
-        `Verdict: ${data.verdict ?? 'Unknown'}`,
-        data.improvement_suggestions ?? 'No suggestions provided.',
+        `Verdict: ${parsed?.verdict ?? 'Unknown'}`,
+        parsed?.improvement_suggestions ?? 'No suggestions provided.',
       ],
     });
   } catch (error) {
@@ -53,6 +55,7 @@ const handleAnalyze = async () => {
     setLoading(false);
   }
 };
+
 
 
   
