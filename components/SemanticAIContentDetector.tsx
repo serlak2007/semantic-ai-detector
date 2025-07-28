@@ -6,7 +6,12 @@ type AnalysisResult = {
   intentCoverage: number;
   entityDepth: number;
   recommendations: string[];
+  subjectivityRatio?: number;
+  verbDiversityScore?: number;
+  rareNamedEntities?: string[];
+  toneType?: string;
 };
+
 
 export default function SemanticAIContentDetector() {
   const [content, setContent] = useState('');
@@ -41,7 +46,6 @@ if (data?.ai_likeness_score !== undefined) {
   }
 }
 
-
     setResult({
       aiProbability: parsed?.ai_likeness_score ?? 0,
       semanticRisk: 100 - (parsed?.semantic_depth_score ?? 0),
@@ -50,8 +54,13 @@ if (data?.ai_likeness_score !== undefined) {
       recommendations: [
         `Verdict: ${parsed?.verdict ?? 'Unknown'}`,
         parsed?.improvement_suggestions ?? 'No suggestions provided.',
-      ],
-    });
+     ],
+      subjectivityRatio: parsed?.subjectivity_ratio,
+      verbDiversityScore: parsed?.verb_diversity_score,
+      rareNamedEntities: parsed?.rare_named_entities,
+      toneType: parsed?.tone_type,
+});
+    
   } catch (error) {
     console.error('API Error:', error);
     setResult({
@@ -108,6 +117,23 @@ if (data?.ai_likeness_score !== undefined) {
               ))}
             </ul>
           </div>
+          {result.subjectivityRatio !== undefined && (
+  <div className="pt-4 border-t">
+    <h3 className="font-semibold">AI Detection Signals:</h3>
+    <ul className="list-disc list-inside ml-4 text-gray-700 space-y-1">
+      <li><strong>Subjectivity Ratio:</strong> {result.subjectivityRatio}%</li>
+      <li><strong>Verb Diversity Score:</strong> {result.verbDiversityScore}/10</li>
+      <li><strong>Tone Type:</strong> {result.toneType}</li>
+      <li>
+        <strong>Rare Named Entities:</strong>{' '}
+        {result.rareNamedEntities && result.rareNamedEntities.length > 0
+          ? result.rareNamedEntities.join(', ')
+          : 'None'}
+      </li>
+    </ul>
+  </div>
+)}
+
         </div>
       )}
     </div>
