@@ -20,22 +20,38 @@ Your goal is to analyze the content below for deep semantic structure, AI-likene
 Your evaluation must consider:
 
 1. **AI-Likeness Score (0–100)**  
-   Detect signs of language prediction, repetition, low information gain, and uniform sentence structure.  
-   - High = repetitive, templated, shallow, generic  
-   - Low = unpredictable, entity-rich, outcome-anchored writing
+   Detect signs of:
+   - Repetition in sentence templates or phrasing  
+   - Low verb/action diversity  
+   - Declarative, generic tone over speculative or experiential voice  
+   - Lack of subjective or emotional expression  
+   - Absence of rare or branded named entities
 
 2. **Semantic Depth Score (0–100)**  
-   Based on how well the content reflects:  
+   Based on presence of:
    - Named and linked entities  
    - Outcome-mechanism relationships  
-   - Intent frames (comparison, risk, benefit, etc.)  
-   - Topical layer richness (e.g. internal concept variance)
+   - Intent frames (comparison, risk, benefit, contradiction)  
+   - Topical variance and semantic richness
 
 3. **Verdict**  
-   Return one: "Human", "AI-Like", or "Hybrid"
+   Choose one: "Human", "AI-Like", or "Hybrid"
 
 4. **Improvement Suggestions**  
-   Recommend actions such as adding entities, restructuring for buyer intent, improving topical coverage, or removing fluff.
+   Recommend how to improve:  
+   - Add specific entities  
+   - Rewrite sections to match user intent  
+   - Restructure content to reduce AI signals  
+   - Increase diversity in syntax and vocabulary
+
+---
+
+Additionally, extract and return the following AI-detection signal metrics:
+
+- **subjectivity_ratio**: A score from 0 to 100 — how subjective, emotional, or experiential the content feels  
+- **verb_diversity_score**: A score from 0 to 10 — how varied the verb and action language is  
+- **rare_named_entities**: A list of specific or uncommon named entities used (e.g., brand names, proprietary concepts)  
+- **tone_type**: One of "Speculative", "Declarative", or "Mixed"
 
 ---
 
@@ -45,7 +61,11 @@ Always return valid JSON in this exact format:
   "ai_likeness_score": 0-100,
   "semantic_depth_score": 0-100,
   "verdict": "Human" | "AI-Like" | "Hybrid",
-  "improvement_suggestions": "string"
+  "improvement_suggestions": "string",
+  "subjectivity_ratio": 0-100,
+  "verb_diversity_score": 0-10,
+  "rare_named_entities": [ "..." ],
+  "tone_type": "Speculative" | "Declarative" | "Mixed"
 }
 
 ---
@@ -72,20 +92,19 @@ Content to analyze:
     });
 
     const data = await response.json();
-    
-    // ✅ Add this log to inspect the raw GPT output
-    console.log('🧠 GPT Raw Response:', JSON.stringify(data, null, 2));
-    
     const output = data?.choices?.[0]?.message?.content;
 
-    // Strip code block wrapper if present
+    // ✅ Strip code block if present
     const cleanedOutput = output?.replace(/```json|```/g, '').trim();
 
+    // 🧠 Log raw output for debugging
+    console.log('🧠 GPT Raw Response:', cleanedOutput);
+
     try {
-      const parsed = JSON.parse(output || '{}');
+      const parsed = JSON.parse(cleanedOutput || '{}');
       return res.status(200).json(parsed);
     } catch {
-      return res.status(200).json({ raw: output, error: 'Response not in valid JSON format.' });
+      return res.status(200).json({ raw: cleanedOutput, error: 'Response not in valid JSON format.' });
     }
   } catch (error) {
     return res.status(500).json({ error: 'Something went wrong', details: error });
